@@ -65,7 +65,7 @@ export default function AddSaleDialog({ isOpen, onClose, onAddSale, inventory, v
         sellingPricePerKg,
         totalSaleAmount,
         saleDate: formData.saleDate,
-        customerName: formData.customerName || null,
+        customerName: formData.customerName || '',
         paymentMethod: formData.paymentMethod
       };
 

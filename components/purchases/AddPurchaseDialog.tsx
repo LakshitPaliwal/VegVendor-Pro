@@ -153,7 +153,7 @@ export default function AddPurchaseDialog({
           purchaseDate,
           verificationStatus: 'pending',
           cratesCount: item.cratesCount || 0,
-          vendorCrateCode: item.selectedCrateCode ?? null,
+          vendorCrateCode: item.selectedCrateCode ?? '',
         };
 
         await onAddPurchase(newPurchase);

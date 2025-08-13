@@ -64,14 +64,14 @@ export default function CratesManagementPage() {
     return purchasesWithCrates.filter(purchase => {
       // Search filter
       const matchesSearch = purchase.vegetable.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           purchase.vendorName.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        purchase.vendorName.toLowerCase().includes(searchTerm.toLowerCase());
+
       // Date filter
       const matchesDate = !selectedDate || purchase.purchaseDate === format(selectedDate, 'yyyy-MM-dd');
-      
+
       // Vendor filter
       const matchesVendor = !selectedVendor || selectedVendor === 'all-vendors' || purchase.vendorId === selectedVendor;
-      
+
       return matchesSearch && matchesDate && matchesVendor;
     });
   }, [purchasesWithCrates, searchTerm, selectedDate, selectedVendor]);
@@ -97,7 +97,9 @@ export default function CratesManagementPage() {
 
   // Calculate totals
   const totalCrates = filteredPurchases.reduce((sum, purchase) => sum + (purchase.cratesCount || 0), 0);
-  const returnedCrates = filteredPurchases.reduce((sum, purchase) => sum + (purchase.returnedCrates || 0), 0);
+  //  const returnedCrates = filteredPurchases.reduce((sum, purchase) => sum + (purchase.returnedCrates || 0), 0);
+  const returnedCrates = filteredPurchases.reduce((sum, purchase) => sum + (purchase.returnedCrates ?? 0), 0);
+
   const pendingCrates = totalCrates - returnedCrates;
 
   const hasActiveFilters = searchTerm || selectedDate || (selectedVendor && selectedVendor !== 'all-vendors');
@@ -108,7 +110,7 @@ export default function CratesManagementPage() {
     try {
       const currentReturned = selectedPurchase.returnedCrates || 0;
       const newReturnedTotal = currentReturned + cratesToReturn;
-      
+
       // Update purchase with returned crates info
       await updatePurchase(selectedPurchase.id, {
         returnedCrates: newReturnedTotal,
@@ -117,14 +119,14 @@ export default function CratesManagementPage() {
       });
 
       // Update local state
-      setPurchases(prev => prev.map(p => 
-        p.id === selectedPurchase.id 
-          ? { 
-              ...p, 
-              returnedCrates: newReturnedTotal,
-              lastReturnDate: returnDate,
-              crateStatus: newReturnedTotal >= (p.cratesCount || 0) ? 'returned' : 'partial'
-            }
+      setPurchases(prev => prev.map(p =>
+        p.id === selectedPurchase.id
+          ? {
+            ...p,
+            returnedCrates: newReturnedTotal,
+            lastReturnDate: returnDate,
+            crateStatus: newReturnedTotal >= (p.cratesCount || 0) ? 'returned' : 'partial'
+          }
           : p
       ));
 
@@ -146,8 +148,10 @@ export default function CratesManagementPage() {
 
   const getCrateStatus = (purchase: Purchase) => {
     const total = purchase.cratesCount || 0;
-    const returned = purchase.returnedCrates || 0;
-    
+    // const returned = purchase.returnedCrates || 0;
+    const returned = purchase.returnedCrates ?? 0;
+
+
     if (returned === 0) return 'pending';
     if (returned >= total) return 'returned';
     return 'partial';
@@ -353,11 +357,18 @@ export default function CratesManagementPage() {
                                       </span>
                                     )}
                                   </span>
-                                  {purchase.returnedCrates > 0 && (
+                                  {/* {purchase.returnedCrates > 0 && (
+                                    <span className="text-green-600">
+                                      • {purchase.returnedCrates} returned
+                                    </span>
+                                   )}  */}
+                                  {(purchase.returnedCrates ?? 0) > 0 && (
                                     <span className="text-green-600">
                                       • {purchase.returnedCrates} returned
                                     </span>
                                   )}
+
+
                                   {purchase.lastReturnDate && (
                                     <span className="text-gray-500">
                                       • Last return: {format(parseISO(purchase.lastReturnDate), 'MMM d, yyyy')}
@@ -383,7 +394,7 @@ export default function CratesManagementPage() {
                         </div>
                       ))}
                     </div>
-                    
+
                     {/* Vendor Summary */}
                     <Separator className="my-4" />
                     <div className="flex justify-between items-center text-sm bg-blue-50 p-3 rounded-lg">
@@ -451,7 +462,7 @@ export default function CratesManagementPage() {
                   </div>
                 )}
               </div>
-              
+
               <div>
                 <Label htmlFor="returnDate">Return Date</Label>
                 <Input
@@ -461,14 +472,16 @@ export default function CratesManagementPage() {
                   onChange={(e) => setReturnDate(e.target.value)}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="cratesToReturn">Number of Crates to Return</Label>
                 <Input
                   id="cratesToReturn"
                   type="number"
                   min="1"
-                  max={(selectedPurchase.cratesCount || 0) - (selectedPurchase.returnedCrates || 0)}
+                  // max={(selectedPurchase.cratesCount || 0) - (selectedPurchase.returnedCrates || 0)}
+                  max={(selectedPurchase.cratesCount ?? 0) - (selectedPurchase.returnedCrates ?? 0)}
+
                   value={cratesToReturn}
                   onChange={(e) => setCratesToReturn(parseInt(e.target.value) || 0)}
                   placeholder="Enter number of crates"
@@ -477,11 +490,11 @@ export default function CratesManagementPage() {
                   Maximum: {(selectedPurchase.cratesCount || 0) - (selectedPurchase.returnedCrates || 0)} crates available
                 </p>
               </div>
-              
+
               <div className="flex space-x-2">
-                <Button 
-                  onClick={handleReturnCrates} 
-                  className="flex-1" 
+                <Button
+                  onClick={handleReturnCrates}
+                  className="flex-1"
                   disabled={cratesToReturn <= 0 || cratesToReturn > ((selectedPurchase.cratesCount || 0) - (selectedPurchase.returnedCrates || 0))}
                 >
                   Record Return

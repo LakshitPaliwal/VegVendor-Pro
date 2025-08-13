@@ -10,7 +10,9 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Receipt, FileText, Calendar as CalendarIcon, Download } from 'lucide-react';
-import { Sale, Expense, Purchase, Vendor } from '@/lib/firestore';
+import { Sale, Expense, Purchase, Vendor, InventoryItem, VegetableItem } from '@/lib/firestore';
+
+
 import { format, subDays, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, parseISO } from 'date-fns';
 import Link from 'next/link';
 import AddSaleDialog from './AddSaleDialog';
@@ -65,19 +67,19 @@ export default function FinancialReports({
       case 'today':
         return { start: format(today, 'yyyy-MM-dd'), end: format(today, 'yyyy-MM-dd') };
       case 'week':
-        return { 
-          start: format(startOfWeek(today), 'yyyy-MM-dd'), 
-          end: format(endOfWeek(today), 'yyyy-MM-dd') 
+        return {
+          start: format(startOfWeek(today), 'yyyy-MM-dd'),
+          end: format(endOfWeek(today), 'yyyy-MM-dd')
         };
       case 'month':
-        return { 
-          start: format(startOfMonth(today), 'yyyy-MM-dd'), 
-          end: format(endOfMonth(today), 'yyyy-MM-dd') 
+        return {
+          start: format(startOfMonth(today), 'yyyy-MM-dd'),
+          end: format(endOfMonth(today), 'yyyy-MM-dd')
         };
       case 'custom':
-        return { 
-          start: format(customStartDate, 'yyyy-MM-dd'), 
-          end: format(customEndDate, 'yyyy-MM-dd') 
+        return {
+          start: format(customStartDate, 'yyyy-MM-dd'),
+          end: format(customEndDate, 'yyyy-MM-dd')
         };
       default:
         return { start: format(startOfMonth(today), 'yyyy-MM-dd'), end: format(endOfMonth(today), 'yyyy-MM-dd') };
@@ -136,8 +138,8 @@ export default function FinancialReports({
     const purchasesByDate = filteredData.purchases.reduce((acc, purchase) => {
       const date = purchase.purchaseDate;
       // Use actual received amount if weight was verified, otherwise use original amount
-      const actualAmount = (purchase.receivedWeight && purchase.receivedWeight !== purchase.orderedWeight) 
-        ? purchase.receivedWeight * purchase.pricePerKg 
+      const actualAmount = (purchase.receivedWeight && purchase.receivedWeight !== purchase.orderedWeight)
+        ? purchase.receivedWeight * purchase.pricePerKg
         : purchase.totalAmount;
       acc[date] = (acc[date] || 0) + actualAmount;
       return acc;
@@ -171,13 +173,23 @@ export default function FinancialReports({
         }
         return sum + p.totalAmount;
       }, 0);
-      
+
       // Calculate estimated sales for this vendor's items
-      const vendorItems = [...new Set(vendorPurchases.map(p => p.vegetable))];
+      // const vendorItems = [...new Set(vendorPurchases.map(p => p.vegetable))];
+      const seen: Record<string, boolean> = {};
+      const vendorItems: string[] = [];
+
+      for (const p of vendorPurchases) {
+        if (!seen[p.vegetable]) {
+          seen[p.vegetable] = true;
+          vendorItems.push(p.vegetable);
+        }
+      }
+
       const estimatedSales = filteredData.sales
         .filter(s => vendorItems.includes(s.vegetable))
         .reduce((sum, s) => sum + s.totalSaleAmount, 0);
-      
+
       const profit = estimatedSales - totalCost;
       const margin = estimatedSales > 0 ? (profit / estimatedSales) * 100 : 0;
 
@@ -212,7 +224,7 @@ export default function FinancialReports({
     const gstRate = 0; // Most vegetables are GST-free, but you can adjust this
     const taxableSales = metrics.totalSales;
     const gstAmount = taxableSales * (gstRate / 100);
-    
+
     return {
       taxableSales,
       gstRate,
@@ -274,7 +286,7 @@ export default function FinancialReports({
                 <SelectItem value="custom">Custom Range</SelectItem>
               </SelectContent>
             </Select>
-            
+
             {dateRange === 'custom' && (
               <div className="flex items-center space-x-2">
                 <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
@@ -376,8 +388,8 @@ export default function FinancialReports({
                   {metrics.profitMargin.toFixed(1)}% margin
                 </p>
               </div>
-              {metrics.netProfit >= 0 ? 
-                <TrendingUp className="h-8 w-8 text-emerald-600" /> : 
+              {metrics.netProfit >= 0 ?
+                <TrendingUp className="h-8 w-8 text-emerald-600" /> :
                 <TrendingDown className="h-8 w-8 text-red-600" />
               }
             </div>
@@ -522,8 +534,8 @@ export default function FinancialReports({
                   {expenseBreakdown.map((expense, index) => (
                     <div key={expense.category} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div 
-                          className="w-4 h-4 rounded-full" 
+                        <div
+                          className="w-4 h-4 rounded-full"
                           style={{ backgroundColor: COLORS[index % COLORS.length] }}
                         />
                         <span className="font-medium">{expense.category}</span>
@@ -581,7 +593,7 @@ export default function FinancialReports({
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                     <h4 className="font-semibold text-blue-900 mb-2">Note</h4>
                     <p className="text-sm text-blue-800">
-                      Most fresh vegetables and fruits are exempt from GST. This report assumes 0% GST rate. 
+                      Most fresh vegetables and fruits are exempt from GST. This report assumes 0% GST rate.
                       Please consult with your tax advisor for accurate GST calculations based on your specific products and business structure.
                     </p>
                   </div>

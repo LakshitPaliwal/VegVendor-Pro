@@ -49,14 +49,14 @@ export default function AllPurchasesPage() {
     return purchases.filter(purchase => {
       // Search filter
       const matchesSearch = purchase.vegetable.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           purchase.vendorName.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        purchase.vendorName.toLowerCase().includes(searchTerm.toLowerCase());
+
       // Date filter
       const matchesDate = !selectedDate || purchase.purchaseDate === format(selectedDate, 'yyyy-MM-dd');
-      
+
       // Vendor filter
       const matchesVendor = !selectedVendor || selectedVendor === 'all-vendors' || purchase.vendorId === selectedVendor;
-      
+
       return matchesSearch && matchesDate && matchesVendor;
     });
   }, [purchases, searchTerm, selectedDate, selectedVendor]);
@@ -78,7 +78,7 @@ export default function AllPurchasesPage() {
   }, {} as Record<string, Purchase[]>);
 
   // Sort dates in descending order
-  const sortedDates = Object.keys(purchasesByDate).sort((a, b) => 
+  const sortedDates = Object.keys(purchasesByDate).sort((a, b) =>
     new Date(b).getTime() - new Date(a).getTime()
   );
 
@@ -94,7 +94,7 @@ export default function AllPurchasesPage() {
   const totalWeight = filteredPurchases.reduce((sum, purchase) => sum + (purchase.receivedWeight || purchase.orderedWeight), 0);
   const pendingVerifications = filteredPurchases.filter(p => p.verificationStatus === 'pending').length;
   const discrepancies = filteredPurchases.filter(p => p.verificationStatus === 'discrepancy').length;
-  
+
   const hasActiveFilters = searchTerm || selectedDate || (selectedVendor && selectedVendor !== 'all-vendors');
 
   return (
@@ -271,7 +271,7 @@ export default function AllPurchasesPage() {
                   <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-lg font-medium text-gray-900">No purchases found</p>
                   <p className="text-gray-600">
-                    {searchTerm 
+                    {searchTerm
                       ? `No purchases match "${searchTerm}"`
                       : "No purchase history available."
                     }
@@ -284,7 +284,7 @@ export default function AllPurchasesPage() {
                   <Card key={date}>
                     <CardHeader>
                       <CardTitle className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                       
+
                         <span className="text-base sm:text-lg">{format(parseISO(date), 'EEEE, MMMM d, yyyy')}</span>
                         <Badge variant="outline" className="self-start sm:self-center">
                           {purchasesByDate[date].length} purchase(s)
@@ -322,8 +322,8 @@ export default function AllPurchasesPage() {
                                 <div className="flex items-center space-x-2">
                                   <Badge variant={
                                     purchase.verificationStatus === 'verified' ? 'default' :
-                                    purchase.verificationStatus === 'discrepancy' ? 'destructive' :
-                                    'secondary'
+                                      purchase.verificationStatus === 'discrepancy' ? 'destructive' :
+                                        'secondary'
                                   } className="text-xs">
                                     {purchase.verificationStatus === 'pending' && <Scale className="h-3 w-3 mr-1" />}
                                     {purchase.verificationStatus === 'verified' && <CheckCircle className="h-3 w-3 mr-1" />}
@@ -352,7 +352,7 @@ export default function AllPurchasesPage() {
                           </div>
                         ))}
                       </div>
-                      
+
                       {/* Date Summary */}
                       <Separator className="my-4" />
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm space-y-2 sm:space-y-0">

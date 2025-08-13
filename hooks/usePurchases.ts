@@ -46,7 +46,7 @@ export const usePurchases = () => {
     const updates = {
       receivedWeight,
       verificationStatus: discrepancy > 0 ? 'discrepancy' as const : 'verified' as const,
-      discrepancyAmount: discrepancy > 0 ? discrepancy : null
+      discrepancyAmount: discrepancy > 0 ? discrepancy : 0
     };
     
     await dispatch(updatePurchase({ purchaseId, updates })).unwrap();

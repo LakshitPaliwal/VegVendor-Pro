@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { getPurchasesByVendor, getBillsByVendor, addBill, getSalesByDateRange, getExpensesByDateRange, getPurchasesByDateRange, type Bill } from '@/lib/firestore';
+import type { Purchase } from '@/lib/firestore';
 
 // Components
 import Header from '@/components/layout/Header';

@@ -18,6 +18,7 @@ export default function AddVendorDialog({ isOpen, onClose, onAddVendor }: AddVen
   const [vendorContact, setVendorContact] = useState('');
   const [vendorLocation, setVendorLocation] = useState('');
   const [crateCodes, setCrateCodes] = useState<string[]>(['']);
+  const [crateCodePrefix, setCrateCodePrefix] = useState('');
 
   const addCrateCodeField = () => {
     setCrateCodes([...crateCodes, '']);
@@ -42,11 +43,13 @@ export default function AddVendorDialog({ isOpen, onClose, onAddVendor }: AddVen
         contact: vendorContact,
         location: vendorLocation,
         crateCodes: crateCodes.filter(code => code.trim() !== ''),
-        totalPurchases: 0
+        crateCodePrefix,
+        totalPurchases: 0,
+
       };
-      
+
       await onAddVendor(newVendor);
-      
+
       // Reset form
       setVendorName('');
       setVendorContact('');

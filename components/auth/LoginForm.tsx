@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Store, Loader2, AlertCircle } from 'lucide-react';
-import { signIn, signUp } from '@/lib/auth';
+import { signIn } from '@/lib/auth';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');

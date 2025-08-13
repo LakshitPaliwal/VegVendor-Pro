@@ -11,7 +11,7 @@ interface PurchaseTableProps {
   purchases: Purchase[];
 }
 
-export default function PurchaseTable({ purchases, onVerifyWeight }: PurchaseTableProps) {
+export default function PurchaseTable({ purchases }: PurchaseTableProps) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0 overflow-x-auto">

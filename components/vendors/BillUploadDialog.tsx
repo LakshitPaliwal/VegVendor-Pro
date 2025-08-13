@@ -167,8 +167,8 @@ export default function BillUploadDialog({
         fileSize: selectedFile.size,
         totalAmount,
         billType: uploadType === 'single' ? 'child' : 'parent',
-        purchaseId: uploadType === 'single' ? purchaseItem?.id : null,
-        vegetableName: uploadType === 'single' ? purchaseItem?.vegetable : null
+        purchaseId: uploadType === 'single' ? purchaseItem?.id : '',
+        vegetableName: uploadType === 'single' ? purchaseItem?.vegetable : ''
       };
 
       await onUploadBill(billData);

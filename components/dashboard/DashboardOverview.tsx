@@ -28,7 +28,7 @@ export default function DashboardOverview({
   onSwitchToWeightCheck
 }: DashboardOverviewProps) {
   const [isPendingDialogOpen, setIsPendingDialogOpen] = useState(false);
-  
+
   // Get all pending verifications across all dates (use allPurchases, not just today's purchases)
   const allPendingVerifications = allPurchases.filter(p => p.verificationStatus === 'pending');
   const pendingVerificationsCount = allPendingVerifications.length;
@@ -54,7 +54,7 @@ export default function DashboardOverview({
   }, {} as Record<string, Purchase[]>);
 
   // Sort dates in descending order (most recent first)
-  const sortedPendingDates = Object.keys(pendingByDate).sort((a, b) => 
+  const sortedPendingDates = Object.keys(pendingByDate).sort((a, b) =>
     new Date(b).getTime() - new Date(a).getTime()
   );
 
@@ -64,7 +64,7 @@ export default function DashboardOverview({
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard Overview</h2>
         <div className="flex flex-col sm:flex-row gap-2">
           <Link href="/all-purchases">
-            <Button 
+            <Button
               variant="outline"
               className="text-blue-600 border-blue-200 hover:bg-blue-50 w-full sm:w-auto"
             >
@@ -97,7 +97,7 @@ export default function DashboardOverview({
           </CardContent>
         </Card>
 
-        <Card 
+        <Card
           className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 cursor-pointer hover:shadow-md transition-shadow"
           onClick={onSwitchToWeightCheck}
         >
@@ -145,8 +145,8 @@ export default function DashboardOverview({
                   <div className="flex items-center space-x-2">
                     <Badge variant={
                       purchase.verificationStatus === 'verified' ? 'default' :
-                      purchase.verificationStatus === 'discrepancy' ? 'destructive' :
-                      'secondary'
+                        purchase.verificationStatus === 'discrepancy' ? 'destructive' :
+                          'secondary'
                     } className="text-xs">
                       {purchase.verificationStatus}
                     </Badge>
@@ -218,9 +218,13 @@ export default function DashboardOverview({
                                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                                     <span>Ordered: {purchase.orderedWeight} kg</span>
                                     <span>₹{purchase.pricePerKg}/kg</span>
-                                    {purchase.cratesCount > 0 && (
+                                    {/* {purchase.cratesCount > 0 && (
+                                      <span className="text-blue-600">{purchase.cratesCount} crates</span>
+                                    )} */}
+                                    {(purchase.cratesCount ?? 0) > 0 && (
                                       <span className="text-blue-600">{purchase.cratesCount} crates</span>
                                     )}
+
                                   </div>
                                 </div>
                               </div>
@@ -240,7 +244,7 @@ export default function DashboardOverview({
                           </div>
                         ))}
                       </div>
-                      
+
                       {/* Date Summary */}
                       <Separator className="my-4" />
                       <div className="flex justify-between items-center text-sm bg-orange-50 p-3 rounded-lg">
